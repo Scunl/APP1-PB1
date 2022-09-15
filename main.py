@@ -1,4 +1,6 @@
-
+from ast import main
+from filecmp import cmp
+from fltk import cree_fenetre, texte 
 
 
 def traitement(file):
@@ -7,13 +9,18 @@ def traitement(file):
     """
     f = open(file, "r")
     liste = f.readlines()
-
+    liste = totext(liste)
     return liste
 
-def check(liste):
+
+def check(file):
     """
     """
-    if liste[0] == "P3":
+    cmp = 0 
+    liste = traitement(file)
+    while liste[cmp] == "":
+        cmp+=1
+    if liste[cmp] == "P3\n":
         return True
     return False
     
@@ -22,35 +29,62 @@ def totext(liste):
     """
     """
     liste2 = []
-    for i in range(len(liste)):
-        if '#' in liste[i]:
-            liste2.append(commentaire(liste[i]))
+    for elem in liste:
+        if '#' in elem:
+            liste2.append(commentaire(elem))
+        else:
+            liste2.append(elem)
     return liste2
 
 
 def commentaire(texte):
     """
     """
-    liste2=[]
+    texte2 = ""
     a = texte.find("#")
-    for i in range(a):
-        if "#" in texte: 
-            liste2.append(texte[i])
-    return liste2
+    if a == 0:
+        return ""
+    else:
+        return texte[:a]
 
-def supression(liste):
+
+def suppression(liste):
     '''
     '''
     liste2 = []
     for elem in liste:
-        if len(elem) != 0:
-            for elems in elem:
-                if elems != ' ':
-                    liste2.append(elems)
+        if elem != '':
+            liste2.append(elem)
     return liste2
 
 def couple(liste):
     """
     """
-    return liste.pop(0), liste.pop(0), "".join(liste) 
+    return liste[0], liste[1], "".join(liste[2:])
 
+def backslash(liste):
+    liste2 = []
+    for elem in liste:
+        if "\n" in elem:
+            liste2.append(elem[:len(elem) - 1])
+        else:
+            liste2.append(elem)
+    return liste2
+
+def main():
+    pass                                # partie creation de fenetre
+
+
+if __name__  == "__main__":
+
+    liste = traitement("P3.txt")
+    if check("P3.txt"):
+        liste = totext(liste)
+        liste = suppression(liste)
+        print(backslash(liste))
+
+    liste = traitement("P3.txt")
+    if check("P3.txt"):
+        liste = totext(liste)
+        liste = suppression(liste)
+        print(backslash(liste))

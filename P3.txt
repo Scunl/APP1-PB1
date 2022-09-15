@@ -1,3 +1,4 @@
+# bonjour
 P3
 # exemple d'image
 4 4 # carré de 4 sur 4 pixels
