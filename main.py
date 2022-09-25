@@ -1,5 +1,4 @@
-from re import I
-from xdrlib import ConversionError
+import argparse
 from fltk import attend_fermeture, cree_fenetre, rectangle
 
 def traitement(file):
@@ -12,16 +11,14 @@ def traitement(file):
     return liste
 
 
-def check(file: str) -> bool:
+def check(file):
     """
     """
-    cmp = 0 
-    liste = traitement(file)
+    cmp = 0
     liste = backslash(liste)
     while liste[cmp] == "":
         cmp+=1
-    if liste[cmp] == "P3":
-        return True
+        return str(liste[cmp])
     return False
     
 
@@ -34,6 +31,7 @@ def totext(liste):
             liste2.append(commentaire(elem))
         else:
             liste2.append(elem)
+            
     return liste2
 
 
@@ -72,15 +70,15 @@ def parametre(liste: list) -> tuple:
     valmax = int(liste[2])
     for i in range(3, len(liste)):
         pixels.append(liste[i])
-    
+
     return (format, valmax, pixels)
 
 def forme(format):
     liste = []
-    for elem in format:
-        if elem != ' ':
-            liste.append(int(elem))
-    
+    format2 = format.split(" ")
+    for elem in format2:
+        liste.append(int(elem))
+        
     return tuple(liste)
 
 
@@ -107,18 +105,11 @@ def strtoint(pixels):
                 liste.append(int(caractere))
     return liste
 
-def inttohex(pixels):
-    """
-    """
-    couple = tuple
-    
-    return couple
-
 def totuple(liste):
     """
     """
     liste2 = []
-    for i in range(3, len(liste), 3):
+    for i in range(3, len(liste) + 3, 3):
         liste2.append((liste[i-3], liste[i-2], liste[i-1]))
     return liste2
 
@@ -137,47 +128,72 @@ def produit(valmax, liste):
 def convertion(liste):
     """
     """
-    liste2 = list()
-    for i, elem in enumerate(liste):
-        liste2.append([])
-        for tupl in elem:
-            liste2[i].append(hex(tupl)[2:])
+    liste2 = []
+    for i in range(len(liste)):
+        liste2.append(''.join('{:02X}'.format(a) for a in liste[i]))
     return liste2
+
 
 def addition(liste):
     '''
     '''
     liste2 = []
-    for i in range(len(liste)):
+    for i, seq in enumerate(liste):
         liste2.append([])
-        for j in range(len(liste[i])):
-            liste2[i].append(''.join(liste[j]))
-    aaaaaaaaaaaaaaaaaaaaaahhhhhhhhhhhhhhhhhhhhhhhhhhhhhmoncerveau
+        for elem in seq:
+            if len(elem) == 1:
+                liste2[i].append(elem + '0')
+            else:
+                liste2[i].append(elem)
     return liste2
+
+def addition2(liste):
+    '''
+    '''
+    liste2 = []
+    for i in range(len(liste)):
+        liste2.append(''.join(liste[i]))
+    return liste2
+        
 
 def ligne(x, y, liste, taille=1):
     """
     """
-    for i in range(x):
-        for j in range(y):
-            print(liste[x][y])
-            rectangle((i*taille), (j*taille), ((i+1)*taille) ,((j+1)*taille), remplissage=str(liste[x][y]))
-
-
-        
-def main():
-    pass
+    cmpt = 0
+    for i in range(y):
+        for j in range(x):
+            rectangle((j*taille), (i*taille), ((j+1)*taille) ,((i+1)*taille), remplissage='#' + str(liste[cmpt]), epaisseur=0)
+            cmpt += 1
+    return None
 
 
 
+    
+
+"""
+def parametrep1(liste: list) -> tuple:
+    pixels = []
+    px = liste[0]
+    format = liste[1]
+    for i in range(3, len(liste)):
+        pixels.append(liste[i])
+    return (px, format, pixels)
+
+>>>> Fonction a inserer <<<<
+"""
 
 
 
 
 if __name__  == "__main__":
 
-    liste = traitement("P3.txt")
+    parser = argparse.ArgumentParser(prog='app1-pb1-106',
+                                    description='Affiche des images PPM')
+    parser.add_argument('fichier', help='Selectionner des images sous format PPM (3 ou 1)')             
+    args = vars(parser.parse_args())
     
+    
+    liste = traitement(args["fichier"])
     liste = totext(liste)
     liste = suppression(liste)
     liste = backslash(liste)
@@ -192,12 +208,12 @@ if __name__  == "__main__":
     pixels = produit(valmax, pixels)
     pixels = convertion(pixels)
     pixels = addition(pixels)
+    pixels = addition2(pixels)
     
     if x < 100 and y < 100:
-        cree_fenetre(x*100, y*100)
-        """ligne(x, y, pixels, 100)"""
+        cree_fenetre(x*10, y*10)
+        ligne(x, y, pixels,10)
     else:
         cree_fenetre(x*10, y*10)
-        """ligne(x, y, pixels, 10)"""
-    print(pixels)
+        ligne(x, y, pixels)
     attend_fermeture()
